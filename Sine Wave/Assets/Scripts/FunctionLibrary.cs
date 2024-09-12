@@ -14,6 +14,23 @@ public static class FunctionLibrary
         return functions[(int)name];
     }
 
+    public static FunctionName GetRandomFunctionNameOtherThan(FunctionName name)
+    {
+        var choice = (FunctionName)Random.Range(1, functions.Length);
+        return choice == name ? 0 : choice;
+    }
+
+    public static FunctionName GetNextFunctionName(FunctionName name)
+    {
+        return (int)name < functions.Length - 1 ? name + 1 : 0;
+    }
+
+    public static Vector3 Morph(float u, float v, float t, Function from, Function to, float progress)
+    {
+        // smooth step function already clamps from 0-1, so can use unclamped lerp
+        return Vector3.LerpUnclamped(from(u, v, t), to(u, v, t), SmoothStep(0f, 1f, progress));
+    }
+
     public static Vector3 Wave(float u, float v, float t)
     {
         Vector3 p;
@@ -30,6 +47,7 @@ public static class FunctionLibrary
         p.y = Sin(PI * (u + (0.5f * t)));
         p.y += Sin(2f * PI * (v + t)) * (1f / 2f); // 1f/2f reduced to 0.5f by compiler. avoid dividing constants from non-constants (so use * 0.5f instead of / 2f)
         p.y += Sin(PI * (u + v + (0.25f * t)));
+        p.y *= 1f / 2.5f;
         p.z = v;
         return p;
     }
